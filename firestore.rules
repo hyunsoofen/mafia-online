@@ -1,0 +1,52 @@
+rules_version = '2';
+
+// 마피아 웹앱 보안 규칙
+// - 방(rooms/{코드})은 로그인한 누구나 읽을 수 있고, 만든 사람(사회자)만 바꿀 수 있습니다.
+// - 직업(roles)과 밤 행동(actions)은 본인과 사회자만 읽을 수 있습니다.
+// - 사회자 전용 정보(private)는 사회자만 읽고 씁니다.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function hostOf(r) { return get(/databases/$(database)/documents/rooms/$(r)).data.host; }
+    function isHost(r) { return signedIn() && hostOf(r) == request.auth.uid; }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+
+    match /rooms/{r} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.host == request.auth.uid;
+      allow update: if signedIn() && resource.data.host == request.auth.uid
+                    && request.resource.data.host == resource.data.host;
+      allow delete: if false;
+
+      // 입장 명단: 모두 읽기, 본인 또는 사회자만 쓰기
+      match /players/{uid} {
+        allow read: if signedIn();
+        allow write: if isSelf(uid) || isHost(r);
+      }
+      // 낮 투표: 모두 읽기(공개 투표), 본인 또는 사회자만 쓰기
+      match /votes/{uid} {
+        allow read: if signedIn();
+        allow write: if isSelf(uid) || isHost(r);
+      }
+      // 밤 행동: 본인과 사회자만
+      match /actions/{uid} {
+        allow read, write: if isSelf(uid) || isHost(r);
+      }
+      // 직업: 본인과 사회자만 읽기, 사회자만 쓰기
+      match /roles/{uid} {
+        allow read: if isSelf(uid) || isHost(r);
+        allow write: if isHost(r);
+      }
+      // 사회자 전용 (전체 직업표, 밤 기록)
+      match /private/{doc} {
+        allow read, write: if isHost(r);
+      }
+      // 점수판: 모두 읽기, 사회자만 쓰기
+      match /meta/{doc} {
+        allow read: if signedIn();
+        allow write: if isHost(r);
+      }
+    }
+  }
+}

@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#161B33">
+<title>마피아 온라인 룰북</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 폰 한 손으로 위에서 아래로 읽는 단일 열. 상단 고정 목차 칩 → 섹션별 카드. 넓은 화면에서도 680px 폭 유지. */
+:root{
+  --bg:#EEF0F4; --surface:#FFFFFF; --surface-2:#F3F5F8; --ink:#141820; --muted:#596272; --line:#D6DBE3;
+  --mafia:#B42318; --mafia-soft:#FBE6E3; --citizen:#1F57C3; --citizen-soft:#E2EBFB;
+  --ok:#1D7A4C; --ok-soft:#DFF3E8; --warn-soft:#FFF4D6;
+  --night:#161B33; --night-ink:#E7EAF7; --night-muted:#98A1C6; --moon:#F1E2A0;
+  --day:#F5C452; --day-ink:#2A1D00; --focus:#1F57C3;
+  --f-display:"Black Han Sans","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"IBM Plex Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1117; --surface:#161A22; --surface-2:#1C212B; --ink:#E8EBF1; --muted:#98A1B0; --line:#2A303B;
+  --mafia:#F0645A; --mafia-soft:#3A1714; --citizen:#7EA4FF; --citizen-soft:#15223D;
+  --ok:#4CC38A; --ok-soft:#12291D; --warn-soft:#2E2610;
+  --night:#0A0D1E; --night-ink:#E2E6F7; --night-muted:#8890B5; --moon:#E9D88F;
+  --day:#D9A83A; --day-ink:#1D1400; --focus:#7EA4FF; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0E1117; --surface:#161A22; --surface-2:#1C212B; --ink:#E8EBF1; --muted:#98A1B0; --line:#2A303B;
+  --mafia:#F0645A; --mafia-soft:#3A1714; --citizen:#7EA4FF; --citizen-soft:#15223D;
+  --ok:#4CC38A; --ok-soft:#12291D; --warn-soft:#2E2610;
+  --night:#0A0D1E; --night-ink:#E2E6F7; --night-muted:#8890B5; --moon:#E9D88F;
+  --day:#D9A83A; --day-ink:#1D1400; --focus:#7EA4FF; color-scheme:dark;
+}
+html{scroll-behavior:smooth;scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+*{box-sizing:border-box}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:680px;margin:0 auto}
+
+.cover{margin-top:16px;border-radius:18px;background:var(--night);color:var(--night-ink);padding:26px 20px 22px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.6;
+  background-image:radial-gradient(1.5px 1.5px at 70% 22%,var(--night-muted) 99%,transparent),radial-gradient(1px 1px at 86% 60%,var(--night-muted) 99%,transparent),radial-gradient(1.5px 1.5px at 93% 18%,var(--night-muted) 99%,transparent),radial-gradient(1px 1px at 62% 78%,var(--night-muted) 99%,transparent)}
+.cover .moon{position:absolute;right:22px;top:20px;width:54px;height:54px;border-radius:50%;box-shadow:14px -4px 0 0 var(--moon)}
+.kicker{font-size:12.5px;font-weight:700;letter-spacing:.14em;color:var(--night-muted)}
+.cover h1{font-family:var(--f-display);font-weight:400;font-size:44px;line-height:1.05;margin-top:8px}
+.cover h1 b{font-weight:400;color:#F0645A}
+.cover p{margin-top:10px;font-size:15px;opacity:.92;max-width:32em}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;position:relative;z-index:1}
+.fact{border-top:1px solid rgba(255,255,255,.2);padding-top:10px}
+.fact b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;line-height:1.1}
+.fact span{font-size:12.5px;color:var(--night-muted)}
+
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;margin-top:6px;border-bottom:1px solid var(--line)}
+.toc-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.toc-scroll::-webkit-scrollbar{display:none}
+.toc a{flex:none;text-decoration:none;font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);white-space:nowrap}
+
+section{margin-top:30px}
+.sh{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.sh .no{font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--muted)}
+.sh h2{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1.15}
+.lead{color:var(--muted);font-size:15px;margin-bottom:12px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h3{font-size:17px;font-weight:700;margin-bottom:6px}
+.note{background:var(--surface-2);border-radius:12px;padding:12px 14px;font-size:14.5px}
+.note b{font-weight:700}
+.note.warn{background:var(--warn-soft)}
+.hint{color:var(--muted);font-size:13.5px}
+.back{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:14px;font-weight:600;text-decoration:none;color:var(--muted);min-height:36px}
+ul.l,ol.l{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:15px}
+
+.two{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:520px){.two{grid-template-columns:1fr 1fr}}
+.who{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.badge{display:inline-flex;align-items:center;font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink);white-space:nowrap}
+.badge.dark{background:var(--ink);color:var(--bg)}
+.badge.m{background:var(--mafia-soft);color:var(--mafia)}
+.badge.c{background:var(--citizen-soft);color:var(--citizen)}
+
+.win{border-radius:14px;padding:16px}
+.win.c{background:var(--citizen-soft)} .win.m{background:var(--mafia-soft)}
+.win h3{font-family:var(--f-display);font-weight:400;font-size:22px;margin-bottom:4px}
+.win.c h3{color:var(--citizen)} .win.m h3{color:var(--mafia)}
+.win p{font-size:15px}
+.win small{display:block;margin-top:6px;font-size:13px;font-weight:700}
+.win.c small{color:var(--citizen)} .win.m small{color:var(--mafia)}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+th{font-size:12px;color:var(--muted);font-weight:700;background:var(--surface-2)}
+td{font-family:var(--f-mono);font-weight:600}
+td.k{font-family:var(--f-body);text-align:left}
+th:first-child{text-align:left}
+th:first-child,td.k{padding-left:12px}
+td.mf{color:var(--mafia)}
+td.z{color:var(--muted);font-weight:500}
+tr.hl td{background:var(--warn-soft)}
+tr:last-child td{border-bottom:0}
+
+.role{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.role .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.role h3{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1}
+.role.m h3{color:var(--mafia)} .role.c h3{color:var(--citizen)}
+.role .ab{font-weight:700;font-size:15.5px}
+.role ul{margin:0;padding-left:18px;font-size:14.5px;display:flex;flex-direction:column;gap:3px}
+.role .tip{font-size:13.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
+.role .tip b{color:var(--ink)}
+
+.flow{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.flow li{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;border-radius:14px;padding:14px}
+.flow li.n{background:var(--night);color:var(--night-ink)}
+.flow li.d{background:var(--day);color:var(--day-ink)}
+.flow .i{font-family:var(--f-mono);font-weight:600;font-size:22px;line-height:1.1;opacity:.75}
+.flow b{display:block;font-size:17px;font-weight:700}
+.flow span{font-size:14.5px;opacity:.92}
+
+.calc{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:14px}
+.calc b{font-family:var(--f-mono)}
+
+details.qa{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+details.qa+details.qa{margin-top:6px}
+details.qa summary{cursor:pointer;list-style:none;padding:13px 44px 13px 14px;font-weight:700;font-size:15px;position:relative}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::after{content:"+";position:absolute;right:16px;top:10px;font-family:var(--f-mono);font-size:20px;color:var(--muted)}
+details.qa[open] summary::after{content:"−"}
+details.qa p{padding:0 14px 14px;font-size:14.5px;color:var(--ink)}
+.qgrp{font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--muted);margin:14px 0 6px}
+.qgrp:first-child{margin-top:0}
+
+.dd{border-radius:14px;padding:16px}
+.dd.no{background:var(--mafia-soft)} .dd.ok{background:var(--ok-soft)}
+.dd h3{font-size:17px;margin-bottom:8px}
+.dd.no h3{color:var(--mafia)} .dd.ok h3{color:var(--ok)}
+
+.pts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pt{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.pt b{display:block;font-family:var(--f-mono);font-size:30px;font-weight:600;line-height:1}
+.pt span{display:block;font-size:13.5px;font-weight:700;margin-top:6px}
+.pt small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+
+.steps{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.steps li{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);font-size:14.5px}
+.steps li:last-child{border-bottom:0}
+.steps .i{font-family:var(--f-mono);font-weight:600;color:var(--muted)}
+.steps b{display:block;font-size:15px}
+.kbd{display:inline-block;font-size:12.5px;font-weight:700;padding:0 7px;border-radius:6px;background:var(--ink);color:var(--bg);line-height:1.7;margin:1px 0}
+
+.sched{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.sched li{display:grid;grid-template-columns:96px 1fr auto;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);align-items:baseline;font-size:14.5px}
+.sched li:last-child{border-bottom:0}
+.sched .t{font-family:var(--f-mono);font-weight:600;font-size:13.5px}
+.sched .d{font-family:var(--f-mono);color:var(--muted);font-size:13px}
+.sched li.brk{color:var(--muted)}
+.sched li.g b{font-weight:700}
+.sched small{display:block;color:var(--muted);font-size:13px}
+
+footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+</style>
+<style>html,body{margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">← 게임 화면으로</a>
+  <header class="cover">
+    <div class="moon"></div>
+    <div class="kicker">웹앱 진행 · 룰북</div>
+    <h1><b>마피아</b> 온라인</h1>
+    <p>각자 폰으로 방에 들어와 자기 직업을 확인하고, 밤 행동과 투표를 모두 화면에서 합니다. 계정은 필요 없습니다.</p>
+    <div class="facts">
+      <div class="fact"><b>6–20</b><span>참가 인원</span></div>
+      <div class="fact"><b>+1</b><span>사회자 (참가 안 함)</span></div>
+      <div class="fact"><b>40·20</b><span>낮·밤 기본 (분)</span></div>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="목차"><div class="toc-scroll">
+    <a href="#join">입장</a><a href="#win">승리 조건</a><a href="#comp">직업 구성</a><a href="#roles">직업</a><a href="#flow">흐름</a><a href="#vote">투표</a><a href="#faq">판정</a><a href="#manners">매너</a><a href="#score">점수</a><a href="#host">사회자</a><a href="#time">시간</a>
+  </div></nav>
+
+  <section id="join">
+    <div class="sh"><span class="no">00</span><h2>입장 방법</h2></div>
+    <div class="two">
+      <div class="card"><div class="who"><span class="badge dark">사회자</span><span class="hint">노트북</span></div>
+        <ol class="l"><li>게임 사이트를 열고 <b>새 방 만들기</b>를 누릅니다.</li><li>화면의 <b>QR 코드와 4자리 방 코드</b>를 프로젝터에 띄웁니다.</li><li>사회자 화면은 게임 내내 켜 둡니다.</li></ol></div>
+      <div class="card"><div class="who"><span class="badge">참가자</span><span class="hint">폰</span></div>
+        <ol class="l"><li>QR을 찍거나, 사이트에서 방 코드를 넣습니다.</li><li>게임에서 쓸 이름(12자 이내)을 넣고 <b>입장하기</b>.</li><li>시작되면 <b>내 직업 보기</b>를 탭해 확인합니다. 게임은 첫 낮부터 시작합니다.</li></ol></div>
+    </div>
+    <p class="note" style="margin-top:10px"><b>폰이 꺼져도 괜찮습니다.</b> 같은 폰, 같은 브라우저로 다시 열면 직업과 진행 상황이 그대로 돌아옵니다.</p>
+  </section>
+
+  <section id="win">
+    <div class="sh"><span class="no">01</span><h2>승리 조건</h2></div>
+    <div class="two">
+      <div class="win c"><h3>시민 팀</h3><p>살아 있는 마피아를 모두 찾아내 투표로 탈락시키면 이깁니다.</p><small>경찰 · 의사 · 군인 · 정치인 · 시민</small></div>
+      <div class="win m"><h3>마피아 팀</h3><p>살아 있는 마피아 수가 나머지 생존자 수와 같아지면 이깁니다.</p><small>예: 마피아 3명 · 나머지 3명</small></div>
+    </div>
+    <p class="note" style="margin-top:10px">앱이 아침 발표와 낮 투표 마감 직후 자동으로 판정합니다. 끝나면 모든 화면에 전원의 직업이 공개됩니다.</p>
+  </section>
+
+  <section id="comp">
+    <div class="sh"><span class="no">02</span><h2>인원별 직업 구성</h2></div>
+    <p class="lead">사회자가 고른 구성에 맞춰 앱이 인원 수대로 자동 배정합니다. 아래는 <b>표준</b> 구성이며, 나머지 인원은 모두 시민입니다.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>인원</th><th>마피아</th><th>경찰</th><th>의사</th><th>군인</th><th>정치인</th></tr></thead>
+      <tbody>
+        <tr><td class="k">6명</td><td class="mf">1</td><td>1</td><td>1</td><td class="z">–</td><td class="z">–</td></tr>
+        <tr><td class="k">7~9명</td><td class="mf">2</td><td>1</td><td>1</td><td class="z">–</td><td class="z">–</td></tr>
+        <tr><td class="k">10명</td><td class="mf">2</td><td>1</td><td>1</td><td>1</td><td class="z">–</td></tr>
+        <tr><td class="k">11명</td><td class="mf">3</td><td>1</td><td>1</td><td>1</td><td class="z">–</td></tr>
+        <tr><td class="k">12~14명</td><td class="mf">3</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+        <tr><td class="k">15~18명</td><td class="mf">4</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+        <tr class="hl"><td class="k">19~20명</td><td class="mf">5</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+      </tbody></table></div>
+    <div class="two" style="margin-top:10px">
+      <div class="note"><b>입문</b> · 마피아 1명 적게, 군인·정치인 없음. 연습 게임용.</div>
+      <div class="note"><b>마피아 강세</b> · 마피아 1명 많게. 결승 게임용.</div>
+    </div>
+  </section>
+
+  <section id="roles">
+    <div class="sh"><span class="no">03</span><h2>직업별 능력</h2></div>
+    <p class="lead">밤에는 마피아가 함께 탈락시킬 사람을 고르고, <b>경찰·의사</b>가 능력을 씁니다. 군인·정치인·시민도 화면에서 한 명을 고르지만 의심 메모일 뿐이라, 누가 능력자인지 티가 나지 않습니다.</p>
+    <div class="stack">
+      <div class="role m"><div class="top"><h3>마피아</h3><span class="badge m">마피아 팀</span></div>
+        <div class="ab">밤마다 제거할 사람을 고릅니다.</div>
+        <ul><li>직업 카드에 동료 마피아의 이름이 나옵니다.</li><li>밤에는 동료가 누구를 골랐는지 실시간으로 보입니다.</li><li>밤이 끝날 때 가장 많이 고른 사람이 대상, 동률이면 그중 무작위.</li><li>동료 마피아는 고를 수 없습니다.</li></ul>
+        <div class="tip"><b>팁</b> · 말로 맞출 수 없으니 먼저 고른 동료를 따라가세요.</div></div>
+      <div class="role c"><div class="top"><h3>경찰</h3><span class="badge c">시민 팀</span></div>
+        <div class="ab">밤마다 한 명을 조사합니다.</div>
+        <ul><li>고르는 즉시 카드에 「마피아입니다 / 아닙니다」가 뜹니다.</li><li>결과가 뜬 뒤에는 그날 밤 선택을 바꿀 수 없습니다.</li><li>지난 조사 결과는 카드에 계속 남습니다.</li></ul>
+        <div class="tip"><b>팁</b> · 너무 일찍 정체를 밝히면 그날 밤 표적이 됩니다.</div></div>
+      <div class="role c"><div class="top"><h3>의사</h3><span class="badge c">시민 팀</span></div>
+        <div class="ab">밤마다 한 명을 보호합니다.</div>
+        <ul><li>보호한 사람이 마피아에게 지목되면 살아남습니다.</li><li>자기 자신도, 같은 사람을 연달아 보호해도 됩니다.</li></ul>
+        <div class="tip"><b>팁</b> · 경찰이라고 밝힌 사람이 있다면 그날 밤 그 사람을 지키세요.</div></div>
+      <div class="role c"><div class="top"><h3>군인</h3><span class="badge c">시민 팀 · 10명 이상</span></div>
+        <div class="ab">마피아의 공격을 한 번 자동으로 버팁니다.</div>
+        <ul><li>따로 할 일 없이, 첫 공격은 방탄으로 버팁니다.</li><li>두 번째 공격에는 쓰러집니다.</li><li>누가 버텼는지는 발표되지 않습니다.</li><li>밤에 고르는 사람은 의심 메모일 뿐입니다.</li></ul>
+        <div class="tip"><b>팁</b> · 경찰인 척 나서서 마피아의 공격을 대신 받아 내는 미끼가 될 수 있습니다.</div></div>
+      <div class="role c"><div class="top"><h3>정치인</h3><span class="badge c">시민 팀 · 12명 이상</span></div>
+        <div class="ab">낮 투표에서 내 표가 2표로 계산됩니다.</div>
+        <ul><li>실시간 집계에는 다른 사람처럼 1표로 보이고, 마감할 때 몰래 2표로 반영됩니다.</li><li>투표로 탈락할 수 있고, 밤의 공격에도 똑같이 당합니다.</li><li>밤에 고르는 사람은 의심 메모일 뿐입니다.</li></ul>
+        <div class="tip"><b>팁</b> · 표가 비슷하게 갈릴 때 결정권을 쥡니다. 정체를 숨겨야 오래 살아남아 표를 계속 쓸 수 있습니다.</div></div>
+      <div class="role"><div class="top"><h3>시민</h3><span class="badge c">시민 팀</span></div>
+        <div class="ab">특별한 능력은 없습니다.</div>
+        <ul><li>밤에도 다른 사람처럼 한 명을 고릅니다. 모두 폰을 만져야 능력자가 티 나지 않습니다.</li><li>토론과 투표가 유일한 무기입니다.</li></ul>
+        <div class="tip"><b>팁</b> · 후보 투표는 누가 누구를 골랐는지 공개됩니다. 투표 패턴을 눈여겨보세요.</div></div>
+    </div>
+  </section>
+
+  <section id="flow">
+    <div class="sh"><span class="no">04</span><h2>한 바퀴의 흐름</h2></div>
+    <p class="lead">게임은 <b>낮부터</b> 시작합니다. 낮 → 밤 → 낮 순서로, 승리 조건이 채워질 때까지 반복합니다.</p>
+    <ol class="flow">
+      <li class="d"><span class="i">1</span><div><b>낮 · 기본 40분</b><span>토론하면서 탈락시킬 사람에게 투표합니다. 집계가 실시간으로 공개되고, 마감 전까지 바꿀 수 있습니다. 첫 낮은 아무 정보 없이 시작하니 말투와 반응을 보고 추리하세요.</span></div></li>
+      <li class="d"><span class="i">2</span><div><b>투표 마감 · 탈락</b><span>낮이 끝나면 최다 득표자가 바로 탈락합니다. 최후 변론과 찬반 투표는 없습니다.</span></div></li>
+      <li class="n"><span class="i">3</span><div><b>밤 · 기본 20분</b><span>마피아는 함께 탈락시킬 사람을 고르고, 경찰은 조사, 의사는 보호합니다. 군인은 공격을 한 번 자동으로 버팁니다.</span></div></li>
+      <li class="n"><span class="i">4</span><div><b>아침 발표</b><span>시간이 끝나거나 사회자가 누르면 모든 화면에 밤 결과가 뜨고, 다음 낮이 시작됩니다.</span></div></li>
+    </ol>
+    <p class="note" style="margin-top:10px">20명 기준 보통 6~9바퀴에 끝납니다.</p>
+  </section>
+
+  <section id="vote">
+    <div class="sh"><span class="no">05</span><h2>낮 투표 규칙</h2></div>
+    <div class="card"><ul class="l">
+      <li>살아 있는 사람은 낮 동안 언제든 나를 뺀 한 명에게 투표하고, 마감 전까지 바꿀 수 있습니다.</li>
+      <li>누가 누구를 골랐는지 모두의 화면에 실시간으로 보입니다.</li>
+      <li>낮이 끝나면 <b>가장 많은 표를 받은 사람이 바로 탈락</b>합니다.</li>
+      <li><b>동률</b>이거나 아무도 투표하지 않았으면 그날은 아무도 탈락하지 않습니다. 사회자가 마감 전에 <span class="kbd">재투표</span>를 열 수도 있습니다.</li>
+      <li><b>정치인</b>의 표는 마감할 때 2표로 계산됩니다. 실시간 집계에는 1표로 보이므로 실제 결과가 집계와 다를 수 있습니다.</li><li>결과 발표에는 표 수를 밝히지 않습니다.</li>
+      <li>탈락한 사람은 투표하지 않습니다.</li></ul></div>
+  </section>
+
+  <section id="faq">
+    <div class="sh"><span class="no">06</span><h2>이럴 땐 이렇게</h2></div>
+    <div class="qgrp">밤</div>
+    <details class="qa"><summary>의사가 마피아가 고른 사람을 보호했다면?</summary><p>아무도 죽지 않습니다. 「의사가 그 사람을 살려 냈습니다」로 발표됩니다. 의사가 군인을 보호했다면 군인의 방탄도 그대로 남습니다.</p></details>
+    <details class="qa"><summary>마피아가 군인을 공격했다면?</summary><p>첫 공격은 방탄으로 버팁니다. 「누군가 공격을 버텨 냈습니다」로 발표되고, 누가 버텼는지는 밝히지 않습니다.</p></details>
+    <details class="qa"><summary>마피아끼리 고른 사람이 다르면?</summary><p>밤이 끝날 때 가장 많이 고른 사람이 대상입니다. 동률이면 앱이 그중 한 명을 무작위로 정합니다.</p></details>
+    <details class="qa"><summary>마피아가 아무도 안 골랐다면?</summary><p>그날 밤 사망자는 없습니다.</p></details>
+    <details class="qa"><summary>경찰이 조사를 잘못 눌렀다면?</summary><p>결과가 뜬 순간 확정이라 그날 밤에는 바꿀 수 없습니다.</p></details>
+    <details class="qa"><summary>경찰이 정치인이나 군인을 조사하면?</summary><p>시민 팀이므로 「마피아가 아닙니다」로 나옵니다.</p></details>
+    <div class="qgrp">낮</div>
+    <details class="qa"><summary>최다 득표자가 동률이면?</summary><p>그날은 아무도 탈락하지 않고 밤으로 넘어갑니다. 사회자가 마감 전에 재투표를 열면 표가 모두 지워지고 다시 투표합니다.</p></details>
+    <details class="qa"><summary>정치인이 최다 득표를 받으면?</summary><p>다른 사람과 똑같이 탈락합니다. 정치인의 능력은 투표할 때 2표가 되는 것뿐입니다.</p></details>
+    <details class="qa"><summary>집계에서는 이기고 있었는데 결과가 다르다면?</summary><p>정치인의 표가 마감 때 2표로 계산되어 뒤집힌 것입니다. 누가 정치인인지 추리할 단서가 됩니다.</p></details>
+    <details class="qa"><summary>탈락한 사람의 직업은 공개되나요?</summary><p>기본은 비공개입니다. 사회자가 시작 전에 공개로 바꿀 수 있습니다. 게임이 끝나면 전원 공개됩니다.</p></details>
+    <div class="qgrp">시간 · 접속</div>
+    <details class="qa"><summary>시간이 다 되면 어떻게 되나요?</summary><p>자동 진행이 켜져 있으면 밤은 아침 발표, 낮은 투표 마감이 저절로 진행됩니다. 사회자 화면이 켜져 있어야 하며, 사회자는 시간이 남아도 먼저 넘길 수 있습니다.</p></details>
+    <details class="qa"><summary>게임 중간에 들어온 사람은?</summary><p>진행 중인 판은 관전하고, 다음 게임부터 직업을 받습니다.</p></details>
+    <details class="qa"><summary>방이 꽉 찼다고 나온다면?</summary><p>한 방에는 최대 20명까지 들어올 수 있습니다. 사회자에게 알려 주세요.</p></details>
+    <details class="qa"><summary>다른 폰이나 브라우저로 열었다면?</summary><p>새 참가자로 인식됩니다. 원래 쓰던 폰의 같은 브라우저로 다시 열어 주세요.</p></details>
+  </section>
+
+  <section id="manners">
+    <div class="sh"><span class="no">07</span><h2>테이블 매너</h2></div>
+    <div class="two">
+      <div class="dd no"><h3>하지 마세요</h3><ul class="l"><li>내 화면이나 캡처를 보여 주기</li><li>옆 사람 화면 엿보기</li><li>밤에 폰을 안 만지고 가만히 있기</li><li>죽은 뒤에 말하거나 힌트 주기</li><li>단체 채팅방으로 정보 주고받기</li></ul></div>
+      <div class="dd ok"><h3>해도 됩니다</h3><ul class="l"><li>직업을 주장하거나 거짓말하기</li><li>연합하고 배신하기</li><li>공개된 투표 기록으로 추리하기</li><li>투표가 몰릴 때 마지막까지 설득하기</li></ul></div>
+    </div>
+    <p class="note warn" style="margin-top:10px"><b>벌칙</b> · 처음 걸리면 경고, 두 번째부터는 다음 낮 투표에서 빠집니다(사회자가 구두로 관리).</p>
+  </section>
+
+  <section id="score">
+    <div class="sh"><span class="no">08</span><h2>점수와 시상</h2></div>
+    <div class="pts">
+      <div class="pt"><b>+2</b><span>이긴 팀 전원</span><small>죽은 사람 포함</small></div>
+      <div class="pt"><b>+1</b><span>이긴 팀 생존자</span><small>끝까지 산 사람</small></div>
+      <div class="pt"><b>+1</b><span>판별 MVP</span><small>사회자가 지명</small></div>
+    </div>
+    <p class="note" style="margin-top:10px">앱이 자동으로 쌓고, 누구나 화면의 「점수판」에서 볼 수 있습니다. 연습 게임은 반영하지 않습니다. 동점이면 이긴 횟수 순입니다.</p>
+  </section>
+
+  <section id="host">
+    <div class="sh"><span class="no">09</span><h2>사회자 진행 순서</h2></div>
+    <ol class="steps">
+      <li><span class="i">1</span><div><b>입장 확인</b>명단에 모두 들어왔는지 봅니다. 잘못 들어온 사람은 <span class="kbd">내보내기</span>.</div></li>
+      <li><span class="i">2</span><div><b>시간 · 구성</b>「시간 설정」에서 낮·밤 시간(기본 40분·20분)과 자동 진행을 정하고, 직업 구성을 고릅니다.</div></li>
+      <li><span class="i">3</span><div><b>시작</b><span class="kbd">직업 배정하고 첫 낮 시작</span> → 바로 첫 번째 낮 타이머가 돕니다. 모두 직업 카드를 확인하게 하세요.</div></li>
+      <li><span class="i">4</span><div><b>낮</b>타이머는 <span class="kbd">일시정지</span> <span class="kbd">+5분</span> <span class="kbd">+1분</span> <span class="kbd">−1분</span>으로 조절합니다.</div></li>
+      <li><span class="i">5</span><div><b>마감</b><span class="kbd">투표 마감하고 결과 발표</span> → 최다 득표자 탈락 후 바로 밤. 동률을 다시 가리려면 마감 전에 <span class="kbd">재투표</span>.</div></li>
+      <li><span class="i">6</span><div><b>밤</b>마피아·경찰·의사의 제출 현황을 봅니다. 다 냈으면 시간이 남아도 <span class="kbd">아침 발표</span> → 다음 낮.</div></li>
+      <li><span class="i">7</span><div><b>끝</b>MVP 지명 → <span class="kbd">점수판에 반영</span> → <span class="kbd">다음 게임 준비</span>.</div></li>
+    </ol>
+    <p class="note warn" style="margin-top:10px"><b>사회자 화면은 계속 켜 두세요.</b> 시간 자동 진행, 경찰 조사 결과, 마피아끼리의 선택 공유가 사회자 화면을 통해 처리됩니다. 프로젝터에 띄울 때는 「비밀 정보 보기」를 꺼 두세요.</p>
+  </section>
+
+  <section id="time">
+    <div class="sh"><span class="no">10</span><h2>시간 정하기</h2></div>
+    <p class="lead">기본값(낮 40분 · 밤 20분)이면 한 바퀴가 최대 1시간입니다. 행사 길이에 맞춰 사회자가 바꾸세요. 20명 기준 한 판은 보통 6~9바퀴입니다.</p>
+    <ol class="sched">
+      <li class="g"><span class="t">40 · 20분</span><span><b>하루 종일 진행</b><small>업무나 일정 사이사이에 틈틈이 · 기본값</small></span><span class="d">6~9시간</span></li>
+      <li class="g"><span class="t">15 · 5분</span><span><b>반나절 1~2판</b><small>토론을 충분히 하고 싶을 때</small></span><span class="d">2~3시간</span></li>
+      <li class="g"><span class="t">5 · 2분</span><span><b>반나절 3판</b><small>빠르게 여러 판</small></span><span class="d">약 1시간</span></li>
+    </ol>
+    <p class="note" style="margin-top:10px">시간은 게임 중에도 바꿀 수 있고, 다음 낮·밤부터 적용됩니다. 모두 행동이나 투표를 마쳤으면 사회자가 시간보다 먼저 넘겨도 됩니다.</p>
+  </section>
+
+  <footer><span>마피아 온라인 룰북</span><span>6~20명 · 사회자 1명</span></footer>
+</div>
+
+</body>
+</html>
