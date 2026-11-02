@@ -17,7 +17,7 @@ mafia-web/
 ├─ public/              ← 사이트로 올라가는 폴더
 │  ├─ index.html        ← 게임 앱
 │  ├─ rules.html        ← 폰용 룰북
-│  └─ config.js         ← Firebase 설정을 붙여 넣는 곳 (직접 수정)
+│  └─ config.js         ← Firebase 설정 (mafia-online-8a1f3 프로젝트로 채워져 있음)
 ├─ firestore.rules      ← 보안 규칙 (Firebase 콘솔에 붙여 넣기)
 ├─ vercel.json          ← Vercel 배포 설정
 ├─ firebase.json        ← Firebase Hosting 배포 설정
@@ -26,7 +26,7 @@ mafia-web/
 
 ## 2. 설정 없이 먼저 체험하기 (데모 모드)
 
-`public/index.html`을 크롬에서 열면 **데모 모드**로 실행됩니다.
+사이트 주소 뒤에 `?demo`를 붙여 열면 **데모 모드**로 실행됩니다(예: `https://mafia-online.vercel.app/?demo`). 첫 화면의 「혼자 미리 체험해 보기 (데모)」로도 들어갈 수 있습니다. 그냥 열면 항상 정식 모드입니다.
 
 1. 「데모 방 열기」 → 「테스트 참가자로 20명 채우기」 → 「직업 배정하고 첫 낮 시작」을 누릅니다.
 2. 위쪽 「화면 보기」에서 사회자나 참가자를 골라 각자의 화면을 바꿔 가며 봅니다.
@@ -36,39 +36,16 @@ mafia-web/
 
 ---
 
-## 3. Firebase 준비 (데이터 저장소, 한 번만 · 약 10분)
+## 3. Firebase 준비 (한 번만)
 
-Vercel에 올리든 Firebase에 올리든 이 단계는 꼭 필요합니다.
+`config.js`에는 Firebase 프로젝트 **mafia-online-8a1f3**의 설정이 이미 들어 있습니다. 정식으로 쓰기 전에 [Firebase 콘솔](https://console.firebase.google.com/project/mafia-online-8a1f3)에서 아래 세 가지가 되어 있는지 확인하세요. 하나라도 빠지면 「연결하지 못했습니다」 또는 「권한이 없어 저장하지 못했습니다」가 뜹니다.
 
-### 3-1. 프로젝트 만들기
-1. https://console.firebase.google.com 에 구글 계정으로 들어갑니다.
-2. **프로젝트 추가** → 이름(예: `my-mafia`) → 애널리틱스는 꺼도 됩니다 → **프로젝트 만들기**.
+- [ ] **익명 로그인**: 빌드 → Authentication → 로그인 방법 → **익명**을 **사용 설정**
+- [ ] **Firestore 데이터베이스**: 빌드 → Firestore Database → 데이터베이스 만들기 → 위치 **asia-northeast3 (서울)**, **프로덕션 모드**
+- [ ] **보안 규칙**: Firestore Database → **규칙** 탭의 기존 내용을 지우고 이 저장소의 `firestore.rules`를 통째로 붙여 넣은 뒤 **게시**
 
-### 3-2. 웹 앱 등록 → config.js 채우기
-1. 프로젝트 개요에서 **웹(`</>`) 아이콘** → 앱 닉네임 입력 → **앱 등록**.
-2. 화면의 `const firebaseConfig = { ... }` 값을 복사합니다.
-3. `public/config.js`를 메모장으로 열고 `window.FIREBASE_CONFIG = null;`을 아래처럼 바꿔 저장합니다.
-
-```js
-window.FIREBASE_CONFIG = {
-  apiKey: "AIza....",
-  authDomain: "my-mafia.firebaseapp.com",
-  projectId: "my-mafia",
-  storageBucket: "my-mafia.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:1234567890:web:abcdef"
-};
-```
-
-> 이 값은 공개되어도 괜찮은 웹용 설정입니다. 데이터 보호는 아래 보안 규칙이 맡습니다.
-
-### 3-3. 익명 로그인 켜기
-**빌드 → Authentication → 시작하기 → 로그인 방법** 탭에서 **익명**을 **사용 설정**하고 저장합니다.
-
-### 3-4. Firestore 만들고 보안 규칙 붙여 넣기
-1. **빌드 → Firestore Database → 데이터베이스 만들기**를 누릅니다.
-2. 위치는 **asia-northeast3 (서울)**, 모드는 **프로덕션 모드**로 고릅니다.
-3. **규칙** 탭에서 기존 내용을 지우고 `firestore.rules` 내용을 통째로 붙여 넣은 뒤 **게시**합니다.
+> `config.js`의 값은 공개되어도 괜찮은 웹용 설정입니다. 데이터 보호는 보안 규칙이 맡습니다.
+> 다른 Firebase 프로젝트로 바꾸려면 `public/config.js`의 값만 새 프로젝트의 `firebaseConfig`로 바꾸면 됩니다.
 
 ---
 
@@ -150,7 +127,7 @@ firebase deploy           # 사이트 + 보안 규칙을 함께 올림
 
 | 증상 | 확인할 것 |
 |---|---|
-| 「연결하지 못했습니다」 | `config.js` 값이 맞는지, Authentication에서 **익명**이 켜져 있는지 |
+| 「연결하지 못했습니다」 | Authentication에서 **익명**이 켜져 있는지, 사이트 주소가 **승인된 도메인**에 있는지, 인터넷 연결 |
 | 「권한이 없어 저장하지 못했습니다」 | Firestore **규칙** 탭에 `firestore.rules`를 붙여 넣고 **게시**했는지 |
 | Vercel 주소에서만 연결이 안 된다 | Authentication → 설정 → **승인된 도메인**에 Vercel 주소를 추가했는지 |
 | Vercel 주소가 404 | 저장소 맨 위에 `vercel.json`과 `public` 폴더가 있는지(폴더를 한 겹 더 감싸 올리지 않았는지) |

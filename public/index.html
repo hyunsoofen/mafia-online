@@ -673,12 +673,12 @@ function vHost(){
 function vLanding(){
   const demo=D&&D.mode==='demo';
   return `<div class="hero"><div class="moonbig"></div><span class="label" style="color:var(--night-muted)">${MIN}~${MAX}명 · 사회자 1명</span><h2 style="margin-top:6px"><b>마피아</b> 온라인</h2><p>각자 폰으로 들어와 자기 직업을 확인하고, 밤 행동과 투표를 화면에서 합니다.</p><a class="btn sm" href="rules.html" style="margin-top:14px;position:relative;z-index:1;background:transparent;color:inherit;border-color:currentColor;text-decoration:none">룰북 보기</a></div>
-  ${demo?`<div class="note"><b>데모 모드</b> · Firebase 설정 전이라 이 기기 안에서만 동작합니다. 테스트 참가자를 채워 진행 흐름을 미리 볼 수 있고, 다른 기기는 들어올 수 없습니다.</div>`:''}
+  ${demo?`<div class="note"><b>데모 모드</b> · 이 기기 안에서만 동작합니다. 테스트 참가자를 채워 진행 흐름을 미리 볼 수 있고, 다른 기기는 들어올 수 없습니다. <a href="./">정식 화면으로</a></div>`:''}
   <div class="landing">
     <section class="panel stack"><h2>방 참가</h2><p class="hint">사회자에게 받은 4자리 코드를 넣으세요.</p>
       <form id="codeform" class="stack" style="gap:10px"><input type="text" id="codein" class="codein" maxlength="4" autocomplete="off" autocapitalize="characters" value="${esc(ui.code)}" placeholder="ABCD" aria-label="방 코드" ${demo?'disabled':''}><button class="btn primary big wide" type="submit" ${demo?'disabled':''}>들어가기</button></form></section>
     <section class="panel stack"><h2>방 만들기</h2><p class="hint">사회자가 새 방을 엽니다. 방을 만든 기기가 사회자 화면이 되고, 사회자는 게임에 참가하지 않습니다.</p>
-      <button class="btn big wide" data-act="create" ${ui.busy?'disabled':''}>${ui.busy||(demo?'데모 방 열기':'새 방 만들기')}</button></section>
+      <button class="btn big wide" data-act="create" ${ui.busy?'disabled':''}>${ui.busy||(demo?'데모 방 열기':'새 방 만들기')}</button>${demo?'':'<a class="hint" href="?demo">혼자 미리 체험해 보기 (데모)</a>'}</section>
   </div>${rulesHTML()}`;
 }
 
@@ -706,7 +706,7 @@ function renderNow(){
   const hostV=ROOM&&G&&isHostView();
   document.documentElement.classList.toggle('hidesec',!!hostV&&!ui.showSecret);
   let body;
-  if(!BOOTED)body=`<section class="panel empty"><h2>${BOOTERR?'연결하지 못했습니다':'연결하는 중'}</h2><p>${esc(BOOTERR||'잠시만 기다려 주세요.')}</p></section>`;
+  if(!BOOTED)body=`<section class="panel empty"><h2>${BOOTERR?'연결하지 못했습니다':'연결하는 중'}</h2><p>${esc(BOOTERR||'잠시만 기다려 주세요.')}</p>${BOOTERR?'<a class="btn sm" href="?demo">설치 없이 데모로 체험하기</a>':''}</section>`;
   else if(!ROOM)body=vLanding();
   else if(!G)body=`<section class="panel empty"><h2>방을 찾는 중</h2><p>코드 ${esc(ROOM)} 방이 없으면 사회자에게 코드를 다시 확인해 주세요.</p><button class="btn" data-act="exit">처음으로</button></section>`;
   else body=hostV?vHost():vPlayer();
@@ -838,9 +838,11 @@ document.addEventListener('submit',async e=>{
 /* ---------- 시작 ---------- */
 async function boot(){
   render();
-  const cfg=window.FIREBASE_CONFIG;
-  try{D=cfg&&cfg.apiKey?await makeFirebase(cfg):makeLocal()}
-  catch(e){console.error(e);BOOTERR='Firebase에 연결하지 못했습니다. config.js 설정과 인터넷 연결, 익명 로그인 사용 설정을 확인해 주세요.';render();return}
+  const cfg=window.FIREBASE_CONFIG,q=new URLSearchParams(location.search);
+  if(q.has('demo'))D=makeLocal();
+  else if(!cfg||!cfg.apiKey){BOOTERR='Firebase 설정이 필요합니다. config.js에 Firebase 설정값을 넣어 주세요.';render();return}
+  else{try{D=await makeFirebase(cfg)}
+    catch(e){console.error(e);BOOTERR='서버에 연결하지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요. 계속 안 되면 사회자에게 알려 주세요.';render();return}}
   UID=D.uid;VIEW=UID;BOOTED=true;
   const code=new URLSearchParams(location.search).get('room');
   if(code&&D.mode==='live'){ui.code=code.toUpperCase();enterRoom(code.toUpperCase())}else render();
